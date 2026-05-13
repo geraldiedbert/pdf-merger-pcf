@@ -32,13 +32,13 @@ jobs:
 
       - name: Assemble unpacked solution folder
         run: |
-          mkdir -p solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl
+          mkdir -p solution-src/Controls/pdf_PdfMerger.PdfMergeControl
           mkdir -p solution-src/Other
 
           cp out/controls/PdfMergeControl/bundle.js \
-             solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
+             solution-src/Controls/pdf_PdfMerger.PdfMergeControl/
           cp PdfMergeControl/ControlManifest.Input.xml \
-             solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
+             solution-src/Controls/pdf_PdfMerger.PdfMergeControl/
 
           cat > solution-src/Other/Solution.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
@@ -63,7 +63,7 @@ jobs:
               </Publisher>
               <RootComponents>
                 <RootComponent type="66"
-                  schemaName="pdf_PdfMergeControl.PdfMergeControl"
+                  schemaName="pdf_PdfMerger.PdfMergeControl"
                   behavior="0"/>
               </RootComponents>
               <MissingDependencies/>
@@ -75,7 +75,7 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <ImportExportXml version="9.0.0.9690" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <CustomControls>
-              <CustomControl Name="pdf_PdfMergeControl.PdfMergeControl" Version="0.0.1">
+              <CustomControl Name="pdf_PdfMerger.PdfMergeControl" Version="0.0.1">
                 <CustomControlResource Id="" Name="bundle.js" Version="0.0.1"
                   Url="" CompatibleDataTypes="" />
                 <Dependencies />
