@@ -2,69 +2,73 @@ name: Build PCF Solution
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Build PCF
-      run: npm run build
-    
-    - name: Install pac CLI
-      run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
 
-    - name: Create pcfproj
-      run: |
-        $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid><TargetFramework>net40</TargetFramework></PropertyGroup></Project>'
-        Set-Content -Path PdfMergeControl.pcfproj -Value $content
+      # ✅ THE FIX: must run before nuget/msbuild see the project
+      - name: Install .NET 4.8 Developer Pack
+        run: choco install netfx-4.8-devpack -y --no-progress
 
-    - name: Create solution folder
-      run: mkdir solution
-    
-    - name: Init solution
-      working-directory: solution
-      run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
+      - name: Install dependencies
+        run: npm install
 
-    - name: Fix cdsproj
-      working-directory: solution
-      run: |
-        $content = Get-Content solution.cdsproj -Raw
-        $content = $content -replace '<TargetFrameworkVersion>v4\.6\.2</TargetFrameworkVersion>', ''
-        $content = $content -replace '<TargetFramework>net462</TargetFramework>', '<TargetFramework>net48</TargetFramework>'
-        Set-Content solution.cdsproj $content
+      - name: Build PCF
+        run: npm run build
 
-    - name: Add PCF reference
-      working-directory: solution
-      run: pac solution add-reference --path ..
+      - name: Install pac CLI
+        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
 
-    - name: NuGet restore
-      working-directory: solution
-      run: nuget restore solution.cdsproj
+      - name: Create pcfproj
+        run: |
+          $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid><TargetFramework>net48</TargetFramework></PropertyGroup></Project>'
+          Set-Content -Path PdfMergeControl.pcfproj -Value $content
 
-    - name: Build solution zip
-      working-directory: solution
-      run: msbuild /p:configuration=Release
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: PdfMerger-solution
-        path: solution/bin/Release/*.zip
+      - name: Create solution folder
+        run: mkdir solution
+
+      - name: Init solution
+        working-directory: solution
+        run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
+
+      - name: Fix cdsproj TargetFramework
+        working-directory: solution
+        run: |
+          $content = Get-Content solution.cdsproj -Raw
+          $content = $content -replace '<TargetFrameworkVersion>[^<]+</TargetFrameworkVersion>', ''
+          $content = $content -replace '<TargetFramework>[^<]+</TargetFramework>', '<TargetFramework>net48</TargetFramework>'
+          Set-Content solution.cdsproj $content
+
+      - name: Add PCF reference
+        working-directory: solution
+        run: pac solution add-reference --path ..
+
+      - name: NuGet restore
+        working-directory: solution
+        run: nuget restore solution.cdsproj
+
+      - name: Build solution zip
+        working-directory: solution
+        run: msbuild /p:configuration=Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PdfMerger-solution
+          path: solution/bin/Release/*.zip
