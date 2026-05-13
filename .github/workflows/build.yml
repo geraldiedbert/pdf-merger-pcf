@@ -30,16 +30,8 @@ jobs:
 
     - name: Create pcfproj
       run: |
-        @"
-        <?xml version="1.0" encoding="utf-8"?>
-        <Project Sdk="Microsoft.NET.Sdk">
-          <PropertyGroup>
-            <Name>PdfMergeControl</Name>
-            <ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid>
-            <OutputPath>$(MSBuildThisFileDirectory)out/controls</OutputPath>
-          </PropertyGroup>
-        </Project>
-        "@ | Set-Content PdfMergeControl.pcfproj
+        $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid></PropertyGroup></Project>'
+        Set-Content -Path PdfMergeControl.pcfproj -Value $content
 
     - name: Create solution folder
       run: mkdir solution
