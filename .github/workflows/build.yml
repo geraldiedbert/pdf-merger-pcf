@@ -25,11 +25,10 @@ jobs:
     - name: Install pac CLI
       run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
 
-    - name: Delete old solution folder
-      run: Remove-Item -Recurse -Force solution -ErrorAction SilentlyContinue
-
-    - name: Create solution folder
-      run: mkdir solution
+    - name: Recreate solution folder
+      run: |
+        Remove-Item -Recurse -Force solution -ErrorAction SilentlyContinue
+        mkdir solution
     
     - name: Init solution
       working-directory: solution
@@ -37,6 +36,18 @@ jobs:
     
     - name: Add PCF reference
       working-directory: solution
-      run: pac solution add-reference --path ..\..\pdf-merger-pcf
+      run: pac solution add-reference --path ..
     
-    - name: Restore
+    - name: Restore solution
+      working-directory: solution
+      run: msbuild /t:restore
+    
+    - name: Build solution zip
+      working-directory: solution
+      run: msbuild
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PdfMerger-solution
+        path: solution/bin/Debug/*.zip
