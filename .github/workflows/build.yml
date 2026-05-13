@@ -22,9 +22,6 @@ jobs:
       - name: Build PCF
         run: npm run build
 
-      - name: Find bundle output
-        run: find . -name "bundle.js" -not -path "*/node_modules/*"
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -38,7 +35,7 @@ jobs:
           mkdir -p solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl
           mkdir -p solution-src/Other
 
-          cp out/controls/bundle.js \
+          cp out/controls/PdfMergeControl/bundle.js \
              solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
           cp PdfMergeControl/ControlManifest.Input.xml \
              solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
