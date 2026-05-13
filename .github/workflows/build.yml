@@ -46,6 +46,10 @@ jobs:
     - name: List solution files
       working-directory: solution
       run: Get-ChildItem
+
+    - name: Print cdsproj
+      working-directory: solution
+      run: Get-Content solution.cdsproj
     
     - name: Add PCF reference
       working-directory: solution
