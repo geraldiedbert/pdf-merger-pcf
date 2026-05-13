@@ -51,7 +51,7 @@ jobs:
               </LocalizedNames>
               <Descriptions/>
               <Version>1.0.0.0</Version>
-              <Managed>false</Managed>
+              <Managed>0</Managed>
               <Publisher>
                 <UniqueName>PdfMerger</UniqueName>
                 <LocalizedNames>
