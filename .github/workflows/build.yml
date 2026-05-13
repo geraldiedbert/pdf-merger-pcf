@@ -1,0 +1,47 @@
+name: Build PCF Solution
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Build PCF
+      run: npm run build
+    
+    - name: Install pac CLI
+      run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
+    
+    - name: Create solution folder
+      run: mkdir solution
+    
+    - name: Init solution
+      working-directory: solution
+      run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
+    
+    - name: Add PCF reference
+      working-directory: solution
+      run: pac solution add-reference --path ..
+    
+    - name: Build solution zip
+      working-directory: solution
+      run: dotnet build
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: PdfMerger-solution
+        path: solution/bin/Debug/*.zip
