@@ -28,6 +28,19 @@ jobs:
     - name: Install pac CLI
       run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
 
+    - name: Create pcfproj
+      run: |
+        @"
+        <?xml version="1.0" encoding="utf-8"?>
+        <Project Sdk="Microsoft.NET.Sdk">
+          <PropertyGroup>
+            <Name>PdfMergeControl</Name>
+            <ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid>
+            <OutputPath>$(MSBuildThisFileDirectory)out/controls</OutputPath>
+          </PropertyGroup>
+        </Project>
+        "@ | Set-Content PdfMergeControl.pcfproj
+
     - name: Create solution folder
       run: mkdir solution
     
@@ -43,7 +56,6 @@ jobs:
       working-directory: solution
       run: |
         $file = Get-ChildItem *.cdsproj | Select-Object -First 1
-        (Get-Content $file) -replace '<TargetFrameworkVersion>v4\.6\.2</TargetFrameworkVersion>', '' -replace '<TargetFramework>net462</TargetFramework>', '<TargetFramework>net462</TargetFramework>' | Set-Content $file
         (Get-Content $file) -replace 'net462', 'net48' | Set-Content $file
     
     - name: Restore solution
