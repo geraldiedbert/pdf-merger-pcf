@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest   # cheaper, no Windows needed
 
     steps:
       - uses: actions/checkout@v4
@@ -16,59 +16,70 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2
-
-      # ✅ THE FIX: must run before nuget/msbuild see the project
-      - name: Install .NET 4.8 Developer Pack
-        run: choco install netfx-4.8-devpack -y --no-progress
-
       - name: Install dependencies
         run: npm install
 
       - name: Build PCF
         run: npm run build
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
       - name: Install pac CLI
-        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
+        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
 
-      - name: Create pcfproj
+      - name: Assemble unpacked solution folder
         run: |
-          $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid><TargetFramework>net48</TargetFramework></PropertyGroup></Project>'
-          Set-Content -Path PdfMergeControl.pcfproj -Value $content
+          mkdir -p solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl
+          mkdir -p solution-src/Other
 
-      - name: Create solution folder
-        run: mkdir solution
+          cp out/controls/bundle.js \
+             solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
+          cp PdfMergeControl/ControlManifest.Input.xml \
+             solution-src/Controls/pdf_PdfMergeControl.PdfMergeControl/
 
-      - name: Init solution
-        working-directory: solution
-        run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
+          cat > solution-src/Other/Solution.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <ImportExportXml version="9.0.0.9690" SolutionPackageVersion="9.0"
+            languagecode="1033" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <SolutionManifest>
+              <UniqueName>PdfMergerPCF</UniqueName>
+              <LocalizedNames>
+                <LocalizedName description="PDF Merger PCF" languagecode="1033"/>
+              </LocalizedNames>
+              <Descriptions/>
+              <Version>1.0.0.0</Version>
+              <Managed>false</Managed>
+              <Publisher>
+                <UniqueName>PdfMerger</UniqueName>
+                <LocalizedNames>
+                  <LocalizedName description="PDF Merger" languagecode="1033"/>
+                </LocalizedNames>
+                <Descriptions/>
+                <CustomizationPrefix>pdf</CustomizationPrefix>
+                <CustomizationOptionValuePrefix>10000</CustomizationOptionValuePrefix>
+              </Publisher>
+              <RootComponents>
+                <RootComponent type="66"
+                  schemaName="pdf_PdfMergeControl.PdfMergeControl"
+                  behavior="0"/>
+              </RootComponents>
+              <MissingDependencies/>
+            </SolutionManifest>
+          </ImportExportXml>
+          EOF
 
-      - name: Fix cdsproj TargetFramework
-        working-directory: solution
+      - name: Pack solution
         run: |
-          $content = Get-Content solution.cdsproj -Raw
-          $content = $content -replace '<TargetFrameworkVersion>[^<]+</TargetFrameworkVersion>', ''
-          $content = $content -replace '<TargetFramework>[^<]+</TargetFramework>', '<TargetFramework>net48</TargetFramework>'
-          Set-Content solution.cdsproj $content
-
-      - name: Add PCF reference
-        working-directory: solution
-        run: pac solution add-reference --path ..
-
-      - name: NuGet restore
-        working-directory: solution
-        run: nuget restore solution.cdsproj
-
-      - name: Build solution zip
-        working-directory: solution
-        run: msbuild /p:configuration=Release
+          ~/.dotnet/tools/pac solution pack \
+            --zipfile PdfMergerPCF.zip \
+            --folder solution-src \
+            --packagetype Unmanaged
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: PdfMerger-solution
-          path: solution/bin/Release/*.zip
+          path: PdfMergerPCF.zip
