@@ -51,6 +51,14 @@ jobs:
       working-directory: solution
       run: Get-Content solution.cdsproj
     
+    - name: Fix cdsproj
+      working-directory: solution
+      run: |
+        $content = Get-Content solution.cdsproj -Raw
+        $content = $content -replace '<TargetFrameworkVersion>v4\.6\.2</TargetFrameworkVersion>', ''
+        Set-Content solution.cdsproj $content
+        Get-Content solution.cdsproj
+
     - name: Add PCF reference
       working-directory: solution
       run: pac solution add-reference --path ..
