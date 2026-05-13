@@ -37,8 +37,10 @@ jobs:
 
           cp out/controls/PdfMergeControl/bundle.js \
              solution-src/Controls/pdf_PdfMerger.PdfMergeControl/
-          cp PdfMergeControl/ControlManifest.Input.xml \
-             solution-src/Controls/pdf_PdfMerger.PdfMergeControl/
+
+          sed 's/path="index.ts"/path="bundle.js"/' \
+            PdfMergeControl/ControlManifest.Input.xml \
+            > solution-src/Controls/pdf_PdfMerger.PdfMergeControl/ControlManifest.Input.xml
 
           cat > solution-src/Other/Solution.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
