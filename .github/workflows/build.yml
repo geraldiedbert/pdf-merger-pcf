@@ -43,13 +43,17 @@ jobs:
       working-directory: solution
       run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
     
+    - name: List solution files
+      working-directory: solution
+      run: Get-ChildItem
+    
     - name: Add PCF reference
       working-directory: solution
       run: pac solution add-reference --path ..
 
     - name: NuGet restore
       working-directory: solution
-      run: nuget restore
+      run: nuget restore solution.cdsproj
 
     - name: Build solution zip
       working-directory: solution
