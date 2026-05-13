@@ -25,9 +25,6 @@ jobs:
     - name: Install pac CLI
       run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
     
-    - name: Create solution folder
-      run: mkdir solution
-    
     - name: Init solution
       working-directory: solution
       run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
