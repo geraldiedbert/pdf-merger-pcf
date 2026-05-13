@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+  <control namespace="PdfMerger" constructor="PdfMergeControl" version="1.0.0" display-name-key="PdfMergeControl" description-key="Merges two PDFs" control-type="standard">
+    <property name="FirstPdf" display-name-key="First PDF" description-key="Base64 of first PDF" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="SecondPdf" display-name-key="Second PDF" description-key="Base64 of second PDF" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="MergedPdf" display-name-key="Merged PDF" description-key="Base64 of merged PDF" of-type="SingleLine.Text" usage="output" required="false" />
+    <resources>
+      <code path="index.ts" order="1" />
+    </resources>
+  </control>
+</manifest>

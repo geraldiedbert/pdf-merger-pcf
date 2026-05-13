@@ -1,0 +1,21 @@
+cat > solutionpkg/customizations.xml << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.0.0.0" SolutionPackageVersion="9.0" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CustomControls>
+    <CustomControl Name="PdfMerger.PdfMergeControl" Version="1.0.0" DisplayName="Pdf Merge Control">
+      <CustomControlResources>
+        <CustomControlResource Order="1" WebResourceType="11" Url="Controls/PdfMerger.PdfMergeControl/bundle.js" />
+      </CustomControlResources>
+      <CustomControlTypes>
+        <CustomControlType forControl="PdfMerger.PdfMergeControl">
+          <CustomControlTypeParameters>
+            <customControlTypeParameter Name="FirstPdf" ParameterType="SingleLine.Text" Usage="input" />
+            <customControlTypeParameter Name="SecondPdf" ParameterType="SingleLine.Text" Usage="input" />
+            <customControlTypeParameter Name="MergedPdf" ParameterType="SingleLine.Text" Usage="output" />
+          </CustomControlTypeParameters>
+        </CustomControlType>
+      </CustomControlTypes>
+    </CustomControl>
+  </CustomControls>
+</ImportExportXml>
+EOF
