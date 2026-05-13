@@ -22,6 +22,9 @@ jobs:
       - name: Build PCF
         run: npm run build
 
+      - name: Find bundle output
+        run: find . -name "bundle.js" -not -path "*/node_modules/*"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
