@@ -28,10 +28,8 @@ jobs:
     - name: Install pac CLI
       run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool --version 2.5.1
 
-    - name: Recreate solution folder
-      run: |
-        Remove-Item -Recurse -Force solution -ErrorAction SilentlyContinue
-        mkdir solution
+    - name: Create solution folder
+      run: mkdir solution
     
     - name: Init solution
       working-directory: solution
@@ -40,6 +38,13 @@ jobs:
     - name: Add PCF reference
       working-directory: solution
       run: pac solution add-reference --path ..
+
+    - name: Fix cdsproj framework
+      working-directory: solution
+      run: |
+        $file = Get-ChildItem *.cdsproj | Select-Object -First 1
+        (Get-Content $file) -replace '<TargetFrameworkVersion>v4\.6\.2</TargetFrameworkVersion>', '' -replace '<TargetFramework>net462</TargetFramework>', '<TargetFramework>net462</TargetFramework>' | Set-Content $file
+        (Get-Content $file) -replace 'net462', 'net48' | Set-Content $file
     
     - name: Restore solution
       working-directory: solution
