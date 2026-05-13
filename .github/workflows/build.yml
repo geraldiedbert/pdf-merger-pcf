@@ -19,6 +19,9 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
     - name: Install dependencies
       run: npm install
     
@@ -44,22 +47,16 @@ jobs:
       working-directory: solution
       run: pac solution add-reference --path ..
 
-    - name: Fix cdsproj framework
+    - name: NuGet restore
       working-directory: solution
-      run: |
-        $file = Get-ChildItem *.cdsproj | Select-Object -First 1
-        (Get-Content $file) -replace 'net462', 'net48' | Set-Content $file
-    
-    - name: Restore solution
-      working-directory: solution
-      run: msbuild /t:restore
-    
+      run: nuget restore
+
     - name: Build solution zip
       working-directory: solution
-      run: msbuild
+      run: msbuild /p:configuration=Release
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: PdfMerger-solution
-        path: solution/bin/Debug/*.zip
+        path: solution/bin/Release/*.zip
