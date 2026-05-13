@@ -43,7 +43,7 @@ jobs:
           cat > solution-src/Other/Solution.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <ImportExportXml version="9.0.0.9690" SolutionPackageVersion="9.0"
-            languagecode="1033" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <SolutionManifest>
               <UniqueName>PdfMergerPCF</UniqueName>
               <LocalizedNames>
