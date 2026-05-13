@@ -33,7 +33,7 @@ jobs:
 
     - name: Create pcfproj
       run: |
-        $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid></PropertyGroup></Project>'
+        $content = '<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><Name>PdfMergeControl</Name><ProjectGuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</ProjectGuid><TargetFramework>net48</TargetFramework></PropertyGroup></Project>'
         Set-Content -Path PdfMergeControl.pcfproj -Value $content
 
     - name: Create solution folder
@@ -42,22 +42,14 @@ jobs:
     - name: Init solution
       working-directory: solution
       run: pac solution init --publisher-name PdfMerger --publisher-prefix pdf
-    
-    - name: List solution files
-      working-directory: solution
-      run: Get-ChildItem
 
-    - name: Print cdsproj
-      working-directory: solution
-      run: Get-Content solution.cdsproj
-    
     - name: Fix cdsproj
       working-directory: solution
       run: |
         $content = Get-Content solution.cdsproj -Raw
         $content = $content -replace '<TargetFrameworkVersion>v4\.6\.2</TargetFrameworkVersion>', ''
+        $content = $content -replace '<TargetFramework>net462</TargetFramework>', '<TargetFramework>net48</TargetFramework>'
         Set-Content solution.cdsproj $content
-        Get-Content solution.cdsproj
 
     - name: Add PCF reference
       working-directory: solution
