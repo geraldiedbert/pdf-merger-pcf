@@ -71,6 +71,19 @@ jobs:
           </ImportExportXml>
           EOF
 
+          cat > solution-src/Other/Customizations.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <ImportExportXml version="9.0.0.9690" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <CustomControls>
+              <CustomControl Name="pdf_PdfMergeControl.PdfMergeControl" Version="0.0.1">
+                <CustomControlResource Id="" Name="bundle.js" Version="0.0.1"
+                  Url="" CompatibleDataTypes="" />
+                <Dependencies />
+              </CustomControl>
+            </CustomControls>
+          </ImportExportXml>
+          EOF
+
       - name: Pack solution
         run: |
           ~/.dotnet/tools/pac solution pack \
