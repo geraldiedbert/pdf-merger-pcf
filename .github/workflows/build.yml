@@ -41,7 +41,7 @@ jobs:
       run: dotnet build
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: PdfMerger-solution
         path: solution/bin/Debug/*.zip
